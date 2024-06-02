@@ -1,4 +1,5 @@
 # User Stories
+![Kanban board](./images/kanban.png)
 
 ## User Story 1
 
@@ -14,12 +15,16 @@ As a front end I want to be able to send a password change request to the backen
 
 ## User Story 4
 
+As the owner, I want only authenticated users to be able to access back end services, so I know who is using them
+
+## User story 5
+
 As a front end, i want to be able to request the stored favourite locations of an authenticated user
 
-## User Story 5
+## User Story 6
 
 As a front end, I want to be able to add new locations to an authenticated user's favourite locations list
 
-## User Story 6
+## User Story 7
 
 As a front end, I want to be able to send a request to remove an authenticated users favourite locations
