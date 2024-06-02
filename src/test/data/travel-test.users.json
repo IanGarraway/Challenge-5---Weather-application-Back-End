@@ -1,0 +1,18 @@
+{
+    "testUsers": [
+        {
+            "_id": {
+                "$oid": "665c84de2a26e96eb6a08426"
+            },
+            "userName": "testGuy",
+            "userPassword": "test"
+        },
+        {
+            "_id": {
+                "$oid": "665c86052a26e96eb6a0842a"
+            },
+            "userName": "testGal",
+            "userPassword": "badPass"
+        }
+    ]
+}

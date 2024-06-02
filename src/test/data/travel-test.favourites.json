@@ -1,0 +1,18 @@
+{
+	"testFavourites": [
+		{
+			"_id": {
+				"$oid": "665c65382a26e96eb6a08423"
+			},
+			"name": "London, England",
+			"userID": "665c84de2a26e96eb6a08426"
+		},
+		{
+			"_id": {
+				"$oid": "665c658c2a26e96eb6a08424"
+			},
+			"name": "Leeds, England",
+			"userID": "665c84de2a26e96eb6a08426"
+		}
+	]
+}
