@@ -19,9 +19,7 @@ export default class AllRoutes{
     }
 
     #initialiseRoutes = () => {     
-         this.#router.get('/example', (req, res) => {
-            res.send('Example route');
-        });
+         this.#router.get('/favourites', this.#controller.getFavourites);
     };
 
     getRouter = () => { return this.#router; };

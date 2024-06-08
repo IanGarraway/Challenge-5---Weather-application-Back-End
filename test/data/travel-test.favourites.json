@@ -1,6 +1,13 @@
 {
 	"testFavourites": [
 		{
+           "id": {
+			"$oid": "66645c7287daa9d8615b9c22"
+		   },
+            "name": "Dublin, USA",
+			"userID": "665c84de2a26e96eb6a08426"
+        },
+		{
 			"_id": {
 				"$oid": "665c65382a26e96eb6a08423"
 			},
