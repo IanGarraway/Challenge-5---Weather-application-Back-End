@@ -5,6 +5,6 @@ const favouriteSchema = new Schema({
     userID: { type: String, required: true },
 });
 
-const User = model("User", userSchema);
+const Favourite = model("Favourite", favouriteSchema);
 
-export default User;
+export default Favourite;
