@@ -1,18 +1,18 @@
+[{
+  "_id": {
+    "$oid": "665c84de2a26e96eb6a08426"
+  },
+  "userName": "testGuy",
+  "userPassword": "test",
+  "email": "testguy@test.com",
+  "name": "Test Guy"
+},
 {
-    "testUsers": [
-        {
-            "_id": {
-                "$oid": "665c84de2a26e96eb6a08426"
-            },
-            "userName": "testGuy",
-            "userPassword": "test"
-        },
-        {
-            "_id": {
-                "$oid": "665c86052a26e96eb6a0842a"
-            },
-            "userName": "testGal",
-            "userPassword": "badPass"
-        }
-    ]
-}
+  "_id": {
+    "$oid": "665c86052a26e96eb6a0842a"
+  },
+  "userName": "testGal",
+  "userPassword": "badPass",
+  "email": "testgal@test.com",
+  "name": "Test Gal"
+}]

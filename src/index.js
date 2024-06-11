@@ -1,4 +1,4 @@
-import Config from "./config/Config.js";
+import Config from "./config/config.js";
 import Database from "./db/Database.js";
 import Server from "./server/Server.js"
 import AllRoutes from "./routes/AllRoutes.js"

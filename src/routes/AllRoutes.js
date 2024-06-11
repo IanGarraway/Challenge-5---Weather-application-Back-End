@@ -1,8 +1,10 @@
 import { Router } from "express";
+import { body } from "express-validator";
 import TravelController from "../controllers/Travel.Controller.js";
 
 import FavouriteValidator from "../middleware/Favourite.validator.js";
 import LoginValidator from "../middleware/Login.Validator.js";
+import VerifySignUp from "../middleware/VerifySignUp.js";
 
 
 export default class AllRoutes{
@@ -29,9 +31,17 @@ export default class AllRoutes{
         });
 
         //Auth routes
-        this.#router.get('/about', this.#controller.getForecast)
+        this.#router.post('/newuser', [
+            body(`email`).exists().normalizeEmail().escape().isEmail(),
+            body(`username`).exists().escape(),
+            body('password').exists().escape(),
+            VerifySignUp.VerifyUser
+        ], this.#controller.signup);
+        
 
         //User routes
+        this.#router.get('/about', this.#controller.getForecast)
+
         this.#router.get('/favourites', [LoginValidator.verifyToken             
          ], this.#controller.getFavourites);
     };
