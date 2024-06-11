@@ -11,6 +11,7 @@ const updateState = (data) => {
             temp: currentData.main.temp,
         });
     }
+    
     return tempDays;
 };
 
