@@ -202,6 +202,58 @@ describe("Integration Tests", () => {
 
                 })
             })
+            describe("incorrectly entering username and password doesn't log you in", () => {
+                it("will respond with 200 and the users username and token.", async () => {
+                    //Arrange
+                    const newuser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    await request.post("/newuser").send(newuser);
+
+                    const newLogin = {
+                        "username": "testGuy",
+                        "password": "testbad"
+                    };
+
+                    //Act
+                    const response = await request.post("/login").send(newLogin);
+                    
+                    //Assert
+                    expect(response.status).to.equal(401);
+                    expect(response.body).to.not.have.property('token')
+
+
+                });
+            });
+            describe("incorrectly entering username and password doesn't log you in", () => {
+                it("will respond with 200 and the users username and token.", async () => {
+                    //Arrange
+                    const newuser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };                    
+                    await request.post("/newuser").send(newuser);
+
+                    const newLogin = {
+                        "username": "testGal",
+                        "password": "testbad"
+                    };                    
+
+                    //Act
+                    const response = await request.post("/login").send(newLogin);
+                    
+                    //Assert
+                    expect(response.status).to.equal(401);
+                    expect(response.body).to.not.have.property('token')
+
+
+                })
+            })
             
             
         });
