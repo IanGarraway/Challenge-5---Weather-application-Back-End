@@ -87,7 +87,7 @@ describe("Integration Tests", () => {
                     //Assert
                     expect(response.status).to.equal(201);
                 
-                })
+                });
             });
 
             describe("Post request to /newuser when a user of that name already exists in the database", () => {
@@ -111,7 +111,7 @@ describe("Integration Tests", () => {
                     //Assert
                     expect(response.status).to.equal(400);
                 
-                })
+                });
             });
             describe("Post request to /newuser when a email of that name already exists in the database", () => {
                 it("Should respond with User already exists", async () => {
@@ -134,7 +134,7 @@ describe("Integration Tests", () => {
                     //Assert
                     expect(response.status).to.equal(400);
                 
-                })
+                });
             });
             describe("Post request to /newuser when data not attached", () => {
                 it("Should respond with invalid data 400", async () => {
@@ -153,7 +153,7 @@ describe("Integration Tests", () => {
                     //Assert
                     expect(response.status).to.equal(400);
                 
-                })
+                });
             });
             describe("Attempting to register the same user twice", () => {
                 it("Should respond with invalid data 422", async () => {
@@ -171,7 +171,7 @@ describe("Integration Tests", () => {
                     //Assert
                     expect(response.status).to.equal(422);
                 
-                })
+                });
             });
         });
 
@@ -184,13 +184,13 @@ describe("Integration Tests", () => {
                         "password": "test",
                         "email": "testguy@test.com",
                         "name": "Test Guy"
-                    };                    
+                    };
                     await request.post("/newuser").send(newuser);
 
                     const newLogin = {
                         "username": "testGuy",
                         "password": "test"
-                    };                    
+                    };
 
                     //Act
                     const response = await request.post("/login").send(newLogin);
@@ -200,8 +200,8 @@ describe("Integration Tests", () => {
                     expect(response.body).to.have.property('token')
 
 
-                })
-            })
+                });
+            });
             describe("incorrectly entering username and password doesn't log you in", () => {
                 it("will respond with 200 and the users username and token.", async () => {
                     //Arrange
@@ -236,13 +236,13 @@ describe("Integration Tests", () => {
                         "password": "test",
                         "email": "testguy@test.com",
                         "name": "Test Guy"
-                    };                    
+                    };
                     await request.post("/newuser").send(newuser);
 
                     const newLogin = {
                         "username": "testGal",
                         "password": "testbad"
-                    };                    
+                    };
 
                     //Act
                     const response = await request.post("/login").send(newLogin);
@@ -252,10 +252,8 @@ describe("Integration Tests", () => {
                     expect(response.body).to.not.have.property('token')
 
 
-                })
-            })
-            
-            
+                });
+            });        
         });
     });
 
@@ -272,11 +270,6 @@ describe("Integration Tests", () => {
                 expect(response.status).to.equal(200);
                 expect(response.body).to.be.an('array').that.has.lengthOf(5);
             });
-            
         });
-    });
-        
-
-    
-
+    });     
 });
