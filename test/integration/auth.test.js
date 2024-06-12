@@ -68,88 +68,142 @@ describe("Integration Tests", () => {
             throw new Error();
         }
     });
-    describe("New User tests", () => {
+    describe("Authentification tests", () => {
+        
+    
+        describe("New User tests", () => {
 
-        describe("Post request to /newuser when the user doesn't exist in the database", () => {
-            it("Should respond with User was registered successfully", async () => {
-                //Arrange
-                const newuser = {
-                    "username": "testGuy",
-                    "password": "test",
-                    "email": "testguy@test.com",
-                    "name": "Test Guy"
-                };
-                //Act
-                const response = await request.post("/newuser").send(newuser);
-                //Assert
-                expect(response.status).to.equal(201);
+            describe("Post request to /newuser when the user doesn't exist in the database", () => {
+                it("Should respond with User was registered successfully", async () => {
+                    //Arrange
+                    const newuser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    //Act
+                    const response = await request.post("/newuser").send(newuser);
+                    //Assert
+                    expect(response.status).to.equal(201);
                 
-            })
+                })
+            });
+
+            describe("Post request to /newuser when a user of that name already exists in the database", () => {
+                it("Should respond with User already exists", async () => {
+                    //Arrange
+                    const aUser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    await request.post("/newuser").send(aUser);
+                    const newUser = {
+                        "username": "testGuy",
+                        "password": "test2",
+                        "email": "testguy2@test.com",
+                        "name": "Test Guy"
+                    };
+                    //Act
+                    const response = await request.post("/newuser").send(newUser);
+                    //Assert
+                    expect(response.status).to.equal(400);
+                
+                })
+            });
+            describe("Post request to /newuser when a email of that name already exists in the database", () => {
+                it("Should respond with User already exists", async () => {
+                    //Arrange
+                    const aUser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    await request.post("/newuser").send(aUser);
+                    const newUser = {
+                        "username": "testGuy2",
+                        "password": "test2",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    //Act
+                    const response = await request.post("/newuser").send(newUser);
+                    //Assert
+                    expect(response.status).to.equal(400);
+                
+                })
+            });
+            describe("Post request to /newuser when data not attached", () => {
+                it("Should respond with invalid data 400", async () => {
+                    //Arrange            
+                    const newUser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    await request.post("/newuser").send(newUser);
+                    //Act
+                    const response = await request.post("/newuser").send(newUser);
+
+                
+                    //Assert
+                    expect(response.status).to.equal(400);
+                
+                })
+            });
+            describe("Attempting to register the same user twice", () => {
+                it("Should respond with invalid data 422", async () => {
+                    //Arrange            
+                    const newUser = {
+                        "username": "",
+                        "password": "",
+                        "email": "",
+                        "name": ""
+                    };
+                    //Act
+                    const response = await request.post("/newuser").send(newUser);
+
+                
+                    //Assert
+                    expect(response.status).to.equal(422);
+                
+                })
+            });
         });
 
-        describe("Post request to /newuser when a user of that name already exists in the database", () => {
-            it("Should respond with User already exists", async () => {
-                //Arrange
-                const aUser = {
-                    "username": "testGuy",
-                    "password": "test",
-                    "email": "testguy@test.com",
-                    "name": "Test Guy"
-                };
-                await request.post("/newuser").send(aUser);
-                const newUser = {
-                    "username": "testGuy",
-                    "password": "test2",
-                    "email": "testguy2@test.com",
-                    "name": "Test Guy"
-                };
-                //Act
-                const response = await request.post("/newuser").send(newUser);
-                //Assert
-                expect(response.status).to.equal(400);
-                
-            })
-        });
-        describe("Post request to /newuser when a email of that name already exists in the database", () => {
-            it("Should respond with User already exists", async () => {
-                //Arrange
-                const aUser = {
-                    "username": "testGuy",
-                    "password": "test",
-                    "email": "testguy@test.com",
-                    "name": "Test Guy"
-                };
-                await request.post("/newuser").send(aUser);
-                const newUser = {
-                    "username": "testGuy2",
-                    "password": "test2",
-                    "email": "testguy@test.com",
-                    "name": "Test Guy"
-                };
-                //Act
-                const response = await request.post("/newuser").send(newUser);
-                //Assert
-                expect(response.status).to.equal(400);
-                
-            })
-        });
-        describe("Post request to /newuser when data not attached", () => {
-            it("Should respond with User already exists", async () => {
-                //Arrange            
-                const newUser = {
-                    "username": "",
-                    "password": "",
-                    "email": "",
-                    "name": ""
-                };
-                //Act
-                const response = await request.post("/newuser").send(newUser);
+        describe("Login tests", () => {
+            describe("correctly entering username and password logs you in and sends a token", () => {
+                it("will respond with 200 and the users username and token.", async () => {
+                    //Arrange
+                    const newuser = {
+                        "username": "testGuy",
+                        "password": "test",
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };                    
+                    await request.post("/newuser").send(newuser);
 
-                
-                //Assert
-                expect(response.status).to.equal(422);
-                
+                    const newLogin = {
+                        "username": "testGuy",
+                        "password": "test"
+                    };                    
+
+                    //Act
+                    const response = await request.post("/login").send(newLogin);
+                    
+                    //Assert
+                    expect(response.status).to.equal(200);
+                    expect(response.body).to.have.property('token')
+
+
+                })
             })
+            
+            
         });
     });
 

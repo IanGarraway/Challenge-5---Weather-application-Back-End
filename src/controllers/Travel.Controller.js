@@ -1,3 +1,4 @@
+
 import bcrypt from "bcrypt";
 import db from "../models/index.js";
 import FavouritesService from "../services/Favourites.service.js"
@@ -43,38 +44,47 @@ export default class TravelController{
         }
     };
 
-    signup = (req, res) => {
+    signup = async (req, res) => {
         try {
-            const errors = validationResult(req);
-            console.log(errors);
+            const errors = validationResult(req);            
             if (!errors.isEmpty()) {
-                const err = new Error(`Validation failed`);
-                err.statusCode = 422;
-                err.data = errors.array();
-                throw err;
-            }
+                return res.status(422).json({ message: 'Validation failed', errors: errors.array() });
+            } 
+
+            const user = new User({
+                userName: req.body.username,
+                userPassword: bcrypt.hashSync(req.body.password, 8),
+                email: req.body.email,
+                name: req.body.name
+            });            
+
+            await user.save()
+
+            return res.status(201).send({ message: `User was registered successfully` });
+                
+                
         } catch (err) {
             console.log(err);
-            return res.status(err.statusCode ?? 500).send({ message: err.data });
+            
+            return res.status(500).send({ message: err.message || `Some error occurred while registering` }); 
         }
-        console.log(`name: ${req.body.name}`);
-
         
-        const user = new User({            
-            userName: req.body.username,
-            userPassword: bcrypt.hashSync(req.body.password, 8),
-            email: req.body.email,            
-            name: req.body.name
-        });
+        
+    }
 
-        user.save()
-            .then(user => {
-                return res.status(201).send({ message: `User was registered successfully` });
-            })
-            .catch(err => {
-                return res.status(500).send({ message: err.message || "Some error occurred while registering the user" });
+    login = async (req, res) => {
+        try {            
+            const user = await this.#loginService.login(req.body);
+            console.log(user);
+            console.log(user.Token);
+            res.status(200).send({
+                message: "User has logged in",
+                token: user.Token
             });
-        
+        } catch (error) {
+            res.status(401).json(error);
+        }
+                
     }
     
 }

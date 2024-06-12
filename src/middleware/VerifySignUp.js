@@ -4,28 +4,27 @@ export default class VerifySignUp{
 
     
 
-    static VerifyUser = (req, res, next) => {
+    static VerifyUser = async (req, res, next) => {
+        try{
         const User = db.user;
-        User.findOne({
-            userName: req.body.username
-        }).exec()
-            .then(usernameUser => {
-                if (usernameUser) {
-                    res.status(400).send({ message: `Failed! Username is already in use!` });
-                    return;
-                }
-                return User.findOne({ email: req.body.email }).exec();
-            })
-            .then(emailUser => {
-                if (emailUser) {
-                    return res.status(400).send({ message: `Failed! Email already in use` });
-                }
-                next();
-            })
-            .catch(err => {
-                res.status(500).send({ message: err.message || "Some error occurred while verifying user." });
-            });
+
+        const usernameUser = await User.findOne({ userName: req.body.username });
         
+        if (usernameUser) {
+            return res.status(400).send({ message: `Failed! Username is already in use!` });
+        }
+
+        const emailUser = await User.findOne({ email: req.body.email });
+
+        if (emailUser) {
+            return res.status(400).send({ message: `Failed! Email already in use` });
+        }
+
+        next();
+
+        }catch(err) {
+                res.status(500).send({ message: err.message || "Some error occurred while verifying user." });
+        }
     };
 
 }

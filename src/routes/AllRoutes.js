@@ -37,6 +37,12 @@ export default class AllRoutes{
             body('password').exists().escape(),
             VerifySignUp.VerifyUser
         ], this.#controller.signup);
+
+        this.#router.post('/login', [
+            body(`username`).exists().escape(),
+            body('password').exists().escape(),
+            
+        ], this.#controller.login);
         
 
         //User routes
