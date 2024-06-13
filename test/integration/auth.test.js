@@ -52,7 +52,7 @@ describe("Integration Tests", () => {
     afterEach(async () => {
         try {
             await User.deleteMany();
-            console.log("User Database Cleared");
+            //console.log("User Database Cleared");
         } catch (e) {
             console.log(e.message);
             console.log("Error Clearing Users");
@@ -61,7 +61,7 @@ describe("Integration Tests", () => {
 
         try {
             await Favourite.deleteMany();
-            console.log("Favourites Database Cleared");
+            //console.log("Favourites Database Cleared");
         } catch (e) {
             console.log(e.message);
             console.log("Error Clearing Favourites");
@@ -171,6 +171,22 @@ describe("Integration Tests", () => {
                     //Assert
                     expect(response.status).to.equal(422);
                 
+                });
+            });
+            describe("Post request to /newuser with invalid data", () => {
+                it("Should respond with validation error", async () => {
+                    //Arrange
+                    const invalidUser = {
+                        "username": "",
+                        "password": "short",
+                        "email": "not-an-email",
+                        "name": ""
+                    };
+                    //Act
+                    const response = await request.post("/newuser").send(invalidUser);
+                    //Assert
+                    expect(response.status).to.equal(422);
+                    expect(response.body).to.have.property('message').that.includes('Validation failed');
                 });
             });
         });
@@ -341,8 +357,7 @@ describe("Integration Tests", () => {
                 //act
                 const response = await request.get("/about/?location=Leeds,%20GB");
             
-                //assert
-                console.log(`code: ${response.body}`);
+                //assert                
                 expect(response.status).to.equal(200);
                 expect(response.body).to.be.an('array').that.has.lengthOf(5);
             });
@@ -368,7 +383,7 @@ describe("Integration Tests", () => {
                 "password": "test"
             };
             const response = await request.post("/login").send(newLogin);
-            token = response.body.token;  
+            token = response.body.token;
             
             const user = await User.findOne({ userName: "testGuy" });
             userIDnum = user._id;
@@ -384,7 +399,7 @@ describe("Integration Tests", () => {
                 fav1.save();
                 const fav2 = new Favourite({ name: "London, GB", userID: userIDnum })
                 fav2.save();
-                
+                console.log(token, `<---`);
                 //Act
                 const response = await request.get("/favourites").set("token", token)
 
@@ -392,7 +407,7 @@ describe("Integration Tests", () => {
                 expect(response.status).to.equal(200);
                 expect(response.body).to.be.an('array').that.has.lengthOf(2);
 
-            }); 
+            });
         });
 
         describe("Get Favourites refuses connections when bad token passed", () => {
@@ -410,7 +425,7 @@ describe("Integration Tests", () => {
                 expect(response.status).to.equal(401);
                 
 
-            }); 
+            });
         });
 
         describe("Get Favourites refuses connections when no token passed", () => {
@@ -428,7 +443,19 @@ describe("Integration Tests", () => {
                 expect(response.status).to.equal(403);
                 
 
-            }); 
+            });
+        });
+
+        describe("Accessing protected route with expired token", () => {
+            it("Should respond with token expired error", async () => {
+                //Arrange
+                const expiredToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NmI0OGQyMGYxNTFjNDhjYzg3YTEzNyIsInVzZXJuYW1lIjoidGVzdEd1eSIsImlhdCI6MTcxODMwNzAyNiwiZXhwIjoxNzE4MzA3MDM2fQ.EymDkb1G3xM-FsXmpC-7OU86iddbHT94GV9ZqulmXyA";
+                //Act
+                const response = await request.get("/favourites").set("token", expiredToken);
+                //Assert
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+            });
         });
         
     });
