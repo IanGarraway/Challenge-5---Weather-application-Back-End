@@ -310,13 +310,49 @@ describe("Integration Tests", () => {
                 fav2.save();
                 
                 //Act
-                const response = await request.get("/favourites").set("token",token)
+                const response = await request.get("/favourites").set("token", token)
 
                 //Assert
                 expect(response.status).to.equal(200);
                 expect(response.body).to.be.an('array').that.has.lengthOf(2);
 
-           }) 
+            }); 
+        });
+
+        describe("Get Favourites refuses connections when bad token passed", () => {
+            it("Should return an 401 status error", async () => {
+                //Arrange
+                const fav1 = new Favourite({ name: "Leeds, GB", userID: userIDnum })
+                fav1.save();
+                const fav2 = new Favourite({ name: "London, GB", userID: userIDnum })
+                fav2.save();
+                
+                //Act
+                const response = await request.get("/favourites").set("token", "badtoken")
+
+                //Assert
+                expect(response.status).to.equal(401);
+                
+
+            }); 
+        });
+
+        describe("Get Favourites refuses connections when no token passed", () => {
+            it("Should return an 403 status error", async () => {
+                //Arrange
+                const fav1 = new Favourite({ name: "Leeds, GB", userID: userIDnum })
+                fav1.save();
+                const fav2 = new Favourite({ name: "London, GB", userID: userIDnum })
+                fav2.save();
+                
+                //Act
+                const response = await request.get("/favourites")
+
+                //Assert
+                expect(response.status).to.equal(403);
+                
+
+            }); 
         });
         
     });
