@@ -40,9 +40,16 @@ export default class AllRoutes{
 
         this.#router.post('/login', [
             body(`username`).exists().escape(),
-            body('password').exists().escape(),
+            body('password').exists().escape()
             
         ], this.#controller.login);
+
+        this.#router.post('/changepassword', [
+            body(`username`).exists().escape(),
+            body('password').exists().escape(),
+            body('newpassword').exists().escape(),
+            LoginValidator.verifyToken            
+        ], this.#controller.changePassword);
         
 
         //User routes

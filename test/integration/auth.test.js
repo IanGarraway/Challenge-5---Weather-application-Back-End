@@ -59,14 +59,14 @@ describe("Integration Tests", () => {
             throw new Error();
         }
 
-        // try {
-        //     await Favourite.deleteMany();
-        //     console.log("Favourites Database Cleared");
-        // } catch (e) {
-        //     console.log(e.message);
-        //     console.log("Error Clearing Favourites");
-        //     throw new Error();
-        // }
+        try {
+            await Favourite.deleteMany();
+            console.log("Favourites Database Cleared");
+        } catch (e) {
+            console.log(e.message);
+            console.log("Error Clearing Favourites");
+            throw new Error();
+        }
     });
     describe("Authentification tests", () => {
         
@@ -176,6 +176,7 @@ describe("Integration Tests", () => {
         });
 
         describe("Login tests", () => {
+            
             describe("correctly entering username and password logs you in and sends a token", () => {
                 it("will respond with 200 and the users username and token.", async () => {
                     //Arrange
@@ -203,7 +204,7 @@ describe("Integration Tests", () => {
                 });
             });
             describe("incorrectly entering username and password doesn't log you in", () => {
-                it("will respond with 200 and the users username and token.", async () => {
+                it("will respond with 401 and not have a token.", async () => {
                     //Arrange
                     const newuser = {
                         "username": "testGuy",
@@ -229,7 +230,7 @@ describe("Integration Tests", () => {
                 });
             });
             describe("incorrectly entering username and password doesn't log you in", () => {
-                it("will respond with 200 and the users username and token.", async () => {
+                it("will respond with 401 and not have a token.", async () => {
                     //Arrange
                     const newuser = {
                         "username": "testGuy",
@@ -254,6 +255,81 @@ describe("Integration Tests", () => {
 
                 });
             });        
+        });
+
+        describe("Password change tests", () => {
+            let token;
+            let oldPass = "test";
+            let userName = "testGuy"
+            beforeEach(async () => {
+                const testUser = {
+                        "username": userName,
+                        "password": oldPass,
+                        "email": "testguy@test.com",
+                        "name": "Test Guy"
+                    };
+                    await request.post("/newuser").send(testUser);
+
+                    const testLogin = {
+                        "username": "testGuy",
+                        "password": "test"
+                    };                    
+                const response = await request.post("/login").send(testLogin);
+                token = response.body.token;
+                
+            });
+            describe("confirm the password change route works and you can then log in with the new password", () => {
+                it("should allow you to log in with the new password", async ()  => {
+                    //arrange
+                    const newPass = "changedPass";
+                    const payload = { "username": userName, "password": oldPass, "newpassword": newPass };
+                    const newLogin = { "username": userName, "password": newPass};
+                                        
+                    //act
+                    const response = await request.post("/changepassword").set("token", token).send(payload);
+
+                    const loginRes = await request.post("/login").send(newLogin);
+
+                   
+                    //assert
+                    expect(response.status).to.equal(200);
+                    expect(loginRes.status).to.equal(200);
+                    expect(loginRes.body).to.have.property('token')
+
+               }) 
+            });    
+            
+            describe("confirm the password change refuses if the old password is incorrect", () => {
+                it("should not allow you to change the password with the wrong password", async ()  => {
+                    //arrange
+                    const newPass = "changedPass";
+                    const badPass = "badPass"
+                    const payload = { "username": userName, "password": badPass, "newpassword": newPass };                    
+                                        
+                    //act
+                    const response = await request.post("/changepassword").set("token", token).send(payload); 
+
+                    //assert
+                    //console.log(response);
+                    expect(response.status).to.equal(401);                    
+
+               }) 
+            });
+
+            describe("confirm the password change route works and you can't change the password with a bad token", () => {
+                it("should result in a status 401", async ()  => {
+                    //arrange
+                    const newPass = "changedPass";
+                    const payload = { "username": userName, "password": oldPass, "newpassword": newPass };                   
+                                        
+                    //act
+                    const response = await request.post("/changepassword").set("token", "sdfsdfsdfsdf").send(payload); 
+
+                    //assert
+                    expect(response.status).to.equal(401);   
+
+               }) 
+            }); 
         });
     });
 

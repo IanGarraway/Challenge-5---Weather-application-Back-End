@@ -11,11 +11,8 @@ export default class LoginService{
             
             throw new Error("Invalid login details");
         }
-
         
-        const passwordMatches = await bcrypt.compare(password, user.userPassword);
-        
-        
+        const passwordMatches = await bcrypt.compare(password, user.userPassword);               
 
         if (passwordMatches) {
             

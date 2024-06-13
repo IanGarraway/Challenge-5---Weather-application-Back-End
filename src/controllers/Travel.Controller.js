@@ -1,5 +1,6 @@
 
 import bcrypt from "bcrypt";
+//import ChangePasswordService from "../services/ChangePassword.service.js"; doesn't throw errors properly.
 import db from "../models/index.js";
 import FavouritesService from "../services/Favourites.service.js"
 import LoginService from "../services/Login.service.js"
@@ -15,16 +16,18 @@ export default class TravelController{
     #favService
     #forecastService
     #loginService
+    //#changePasswordService
 
     #User = db.user;
     #Favourite = db.favourite;
 
     
     
-    constructor(favService = new FavouritesService(), loginService = new LoginService(), forecastService = new ForecastService) {
+    constructor(favService = new FavouritesService(), loginService = new LoginService(), forecastService = new ForecastService ) {
         this.#favService = favService;
         this.#loginService = loginService;
         this.#forecastService = forecastService;
+        //this.#changePasswordService = changePasswordService;
     }
 
     getFavourites = async (req, res) => {
@@ -87,6 +90,31 @@ export default class TravelController{
             res.status(401).json(error);
         }
                 
+    }
+
+    changePassword = async (req, res) => {
+        try {       
+            const { username, password, newpassword } = req.body;
+
+            const user = await User.findOne({ userName: username });
+
+
+            if (!user) { throw new Error("Invalid login details"); }
+        
+            const passwordMatches = await bcrypt.compare(password, user.userPassword);
+       
+
+            if (!passwordMatches && user._id === idNum) { throw new Error("Invalid login details"); }
+            
+        
+            user.userPassword = bcrypt.hashSync(newpassword, 8);
+
+            await user.save();
+            
+            res.status(200).send({ message: "Password updated" });
+        } catch (error) {
+            res.status(401).json(error);
+        }
     }
     
 }
