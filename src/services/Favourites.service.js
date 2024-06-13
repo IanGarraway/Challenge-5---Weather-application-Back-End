@@ -1,7 +1,8 @@
 import Favourite from "../models/Favourite.model.js"
 export default class FavouritesService{
-    getFavourites = async (userID) => {
-        return await Favourite.find({userID: userID })
+    getFavourites = async (userIDnum) => {
+        let favourites = await Favourite.find({ "userID": userIDnum })        
+        return favourites;
     }
     
 }

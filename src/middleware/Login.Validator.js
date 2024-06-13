@@ -5,7 +5,7 @@ import User from "../models/User.model.js";
 export default class LoginValidator{
 
     static verifyToken = (req, res, next) => {
-        let token = req.headers["x-access-token"];
+        let token = req.headers["token"];        
 
         if (!token) {
             return res.status(403).send({ message: `Unauthorised` });
@@ -13,9 +13,9 @@ export default class LoginValidator{
         jwt.verify(token, process.env.SECRET, (err, decoded) => {
             if (err) {
                 return res.status(401).send({ message: 'Unauthorised' });
-            }
+            }            
+            req.userId = decoded.id;
         })
-        req.userId = decoded.id;
         next();
     }
     

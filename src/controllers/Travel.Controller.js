@@ -29,9 +29,13 @@ export default class TravelController{
 
     getFavourites = async (req, res) => {
         try {
-            res.json(await this.#favService.getFavourites());
+            
+            let favourites = await this.#favService.getFavourites(req.userId)            
+            res.json(favourites);
         } catch (e) {
+            
             res.status(500).json({ message: e.message });
+            
         }
     };
 
@@ -74,9 +78,7 @@ export default class TravelController{
 
     login = async (req, res) => {
         try {            
-            const user = await this.#loginService.login(req.body);
-            console.log(user);
-            console.log(user.Token);
+            const user = await this.#loginService.login(req.body);            
             res.status(200).send({
                 message: "User has logged in",
                 token: user.Token

@@ -49,24 +49,24 @@ describe("Integration Tests", () => {
     });
 
     // database reset
-    beforeEach(async () => {
+    afterEach(async () => {
         try {
             await User.deleteMany();
             console.log("User Database Cleared");
         } catch (e) {
-            console.log(e.message);;
+            console.log(e.message);
             console.log("Error Clearing Users");
             throw new Error();
         }
 
-        try {
-            await Favourite.deleteMany();
-            console.log("Favourites Database Cleared");
-        } catch (e) {
-            console.log(e.message);;
-            console.log("Error Clearing Favourites");
-            throw new Error();
-        }
+        // try {
+        //     await Favourite.deleteMany();
+        //     console.log("Favourites Database Cleared");
+        // } catch (e) {
+        //     console.log(e.message);
+        //     console.log("Error Clearing Favourites");
+        //     throw new Error();
+        // }
     });
     describe("Authentification tests", () => {
         
@@ -271,5 +271,53 @@ describe("Integration Tests", () => {
                 expect(response.body).to.be.an('array').that.has.lengthOf(5);
             });
         });
-    });     
+    }); 
+    
+    describe("Tests of favourites routes", () => {
+        let token;
+        let userIDnum;
+
+        beforeEach(async () => {
+            
+            const newuser = {
+                "username": "testGuy",
+                "password": "test",
+                "email": "testguy@test.com",
+                "name": "Test Guy"
+            };
+            await request.post("/newuser").send(newuser);
+
+            const newLogin = {
+                "username": "testGuy",
+                "password": "test"
+            };
+            const response = await request.post("/login").send(newLogin);
+            token = response.body.token;  
+            
+            const user = await User.findOne({ userName: "testGuy" });
+            userIDnum = user._id;
+        });
+
+        afterEach(() => {
+            token = null;
+        })
+        describe("Get Favourites returns a list of favourites", () => {
+            it("Should return an array in the body of the response", async () => {
+                //Arrange
+                const fav1 = new Favourite({ name: "Leeds, GB", userID: userIDnum })
+                fav1.save();
+                const fav2 = new Favourite({ name: "London, GB", userID: userIDnum })
+                fav2.save();
+                
+                //Act
+                const response = await request.get("/favourites").set("token",token)
+
+                //Assert
+                expect(response.status).to.equal(200);
+                expect(response.body).to.be.an('array').that.has.lengthOf(2);
+
+           }) 
+        });
+        
+    });
 });
