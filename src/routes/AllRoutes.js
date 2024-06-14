@@ -20,8 +20,8 @@ export default class AllRoutes{
         this.#initialiseRoutes();
     }
 
-    #initialiseRoutes = () => {  
-                // CORS middleware to set headers
+    #initialiseRoutes = () => {
+        // CORS middleware to set headers
         this.#router.use((req, res, next) => {
             res.header(
                 "Access-Control-Allow-Headers",
@@ -48,20 +48,25 @@ export default class AllRoutes{
             body(`username`).exists().notEmpty().escape(),
             body('password').exists().notEmpty().escape(),
             body('newpassword').exists().notEmpty().escape(),
-            LoginValidator.verifyToken            
+            LoginValidator.verifyToken
         ], this.#controller.changePassword);
         
 
         //User routes
         this.#router.get('/about', this.#controller.getForecast)
 
-        this.#router.get('/favourites', [LoginValidator.verifyToken             
+        this.#router.get('/favourites', [LoginValidator.verifyToken
         ], this.#controller.getFavourites);
         
         this.#router.post(`/addfavourite`, [
             body('name').exists().notEmpty().withMessage('Name is required').escape(),
             LoginValidator.verifyToken
         ], this.#controller.addFavourite);
+
+        this.#router.post(`/remfav`, [
+            body('favID').exists().notEmpty().escape(),
+            LoginValidator.verifyToken
+        ], this.#controller.remFavourite);      
     };
 
     getRouter = () => { return this.#router; };

@@ -78,6 +78,32 @@ export default class TravelController{
     
     };
 
+    remFavourite = async (req, res) => {
+        try {
+            console.log( `<--`);
+            const errors = validationResult(req); 
+            if (!errors.isEmpty()) {
+                return res.status(422).json({ message: 'Validation failed', errors: errors.array() });
+            } 
+            let favourite = await this.#favService.remFavourite(req.body.favID, req.userId) 
+
+            if (!(favourite instanceof Error)) {
+                                const payload = await this.#favService.getFavourites(req.userId)
+                
+                res.status(200).json({ message: "Favourite removed", favourites: payload })
+            } else {
+                
+                if (favourite.message === "Favourite doesn't exist") {                    
+                    res.status(400).json({ message: favourite.message });
+                }
+                throw new Error();
+            }
+        } catch (e) {
+            res.status(500).json({ message: e.message });
+        }
+        
+    }
+
     //Account Functions
 
     signup = async (req, res) => {

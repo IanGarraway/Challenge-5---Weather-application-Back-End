@@ -518,7 +518,7 @@ describe("Integration Tests", () => {
         });
 
         describe("Adding a favourite to the list of favourites with an expired token", () => {
-            it("Should respond with 401g", async () => {
+            it("Should respond with 401", async () => {
                 //Arrange
                 const payload = { name: "Leeds, GB" }
                                
@@ -528,6 +528,29 @@ describe("Integration Tests", () => {
                 //Assert
                 expect(response.status).to.equal(401);
                 expect(response.body).to.have.property('message').that.includes('Unauthorised');
+            });
+        });
+
+        describe("removing a favourite to the list of favourites", () => {
+            it("Should respond with 200 and a confirmation that the favourite was removed", async () => {
+                //Arrange
+                let payload = { name: "Leeds, GB" }
+                await request.post("/addfavourite").set("token", token).send(payload);
+                const favourites = await Favourite.find(); 
+                payload = { favID: favourites[0]._id };  
+                
+                              
+                //Act
+                const response = await request.post("/remfav").set("token", token).send(payload);
+
+                //console.log(response);
+
+
+                //Assert
+                const confirmFavs = await Favourite.find();                
+                expect(response.status).to.equal(200);
+                expect(response.body).to.have.property('message').that.includes('Favourite removed');
+                expect(confirmFavs).to.be.an('array').that.has.lengthOf(0);
             });
         });
         

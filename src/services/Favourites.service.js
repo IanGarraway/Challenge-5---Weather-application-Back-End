@@ -14,9 +14,19 @@ export default class FavouritesService{
             return newFavourite;            
         } catch (e) {
             return new Error(e.message);
+        } 
+    }
+
+    remFavourite = async (favID, userIDnum) => {
+        try {
+            if ((await Favourite.find({ _id: favID, userID: userIDnum })).length === 0) { return new Error("Favourite doesn't exist"); }
+
+            await Favourite.deleteOne({ _id: favID, userID: userIDnum });            
+
+            return "Favourite removed"
+        } catch (e) {
+            return new Error(e.message);
         }
-        
-        
     }
     
 }
