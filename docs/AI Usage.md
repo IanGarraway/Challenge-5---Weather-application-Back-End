@@ -1,8 +1,99 @@
 # AI Usage
 
+## debugging
+
+### Prompt:
+addFavourite = async (req, res) => {
+        try {
+            
+            let favourite = await this.#favService.addFavourite(req.body.name, req.userId)
+            
+
+            if (!typeof favourite == 'error') {
+                const payload = await this.#favService.getFavourites(req.userId)
+                console.log(payload, `<---`);
+                res.status(200).json({ message: "Favourite added", favourites: payload })
+            } else throw favourite;
+        }catch (e) {
+                res.status(500).json({ message: e.message });
+            }
+    
+    }
+
+addFavourite = async (location, userIDnum) => {
+        try {
+            
+            const newFavourite = new Favourite({ name: location, userID: userIDnum })
+            await newFavourite.save()
+            return newFavourite;            
+        } catch (e) {
+            return e;
+        }
+        
+        
+    }
+not sure why these aren't working
+
+### Response:
+
+The issue seems to be in the way you are handling the `favourite` object returned from `this.#favService.addFavourite(req.body.name, req.userId)`. Specifically, you are using `!typeof favourite == 'error'` which is not the correct way to check if `favourite` is an instance of an `Error`. Also, the logic to handle the error and non-error cases needs adjustment.
+
+Here's the corrected code:
+
+1. **Controller Method**: `addFavourite` that handles the request and response.
+2. **Service Method**: `addFavourite` that interacts with the database.
+
+### Controller Method
+
+```javascript
+addFavourite = async (req, res) => {
+    try {
+        let favourite = await this.#favService.addFavourite(req.body.name, req.userId);
+
+        if (!(favourite instanceof Error)) {
+            const payload = await this.#favService.getFavourites(req.userId);
+            console.log(payload, `<---`);
+            res.status(200).json({ message: "Favourite added", favourites: payload });
+        } else {
+            throw favourite;
+        }
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+};
+```
+
+### Service Method
+
+```javascript
+addFavourite = async (location, userIDnum) => {
+    try {
+        const newFavourite = new Favourite({ name: location, userID: userIDnum });
+        await newFavourite.save();
+        return newFavourite;
+    } catch (e) {
+        return new Error(e.message); // Return an instance of Error
+    }
+};
+```
+
+### Explanation
+
+1. **Checking for Errors**: 
+   - Use `!(favourite instanceof Error)` to check if `favourite` is an instance of `Error`. This is the correct way to determine if an error occurred.
+
+2. **Error Handling**:
+   - In the service method, if an error occurs, create and return an `Error` object using `new Error(e.message)`. This ensures that the error is properly recognized and handled by the controller.
+
+3. **Consistent Return Types**:
+   - Ensure that the service method always returns either a new `Favourite` object or an `Error` object.
+
+This should resolve the issue and make the error handling more robust.
+
 ## Testing
 
 ### Prompt:
+
 these are the tests i have done for my back end service, have i missed any i should cover? <copy and paste of the 16 tests>
 Integration Tests
     Authentification tests

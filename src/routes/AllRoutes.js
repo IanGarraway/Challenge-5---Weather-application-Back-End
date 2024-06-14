@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, validationResult } from "express-validator";
 import TravelController from "../controllers/Travel.Controller.js";
 
 import FavouriteValidator from "../middleware/Favourite.validator.js";
@@ -32,22 +32,22 @@ export default class AllRoutes{
 
         //Auth routes
         this.#router.post('/newuser', [
-            body(`email`).exists().normalizeEmail().escape().isEmail(),
-            body(`username`).exists().escape(),
-            body('password').exists().escape(),
+            body(`email`).exists().normalizeEmail().notEmpty().escape().isEmail(),
+            body(`username`).exists().notEmpty().escape(),
+            body('password').exists().notEmpty().escape(),
             VerifySignUp.VerifyUser
         ], this.#controller.signup);
 
         this.#router.post('/login', [
-            body(`username`).exists().escape(),
-            body('password').exists().escape()
+            body(`username`).exists().notEmpty().escape(),
+            body('password').exists().notEmpty().escape()
             
         ], this.#controller.login);
 
         this.#router.post('/changepassword', [
-            body(`username`).exists().escape(),
-            body('password').exists().escape(),
-            body('newpassword').exists().escape(),
+            body(`username`).exists().notEmpty().escape(),
+            body('password').exists().notEmpty().escape(),
+            body('newpassword').exists().notEmpty().escape(),
             LoginValidator.verifyToken            
         ], this.#controller.changePassword);
         
@@ -56,7 +56,12 @@ export default class AllRoutes{
         this.#router.get('/about', this.#controller.getForecast)
 
         this.#router.get('/favourites', [LoginValidator.verifyToken             
-         ], this.#controller.getFavourites);
+        ], this.#controller.getFavourites);
+        
+        this.#router.post(`/addfavourite`, [
+            body('name').exists().notEmpty().withMessage('Name is required').escape(),
+            LoginValidator.verifyToken
+        ], this.#controller.addFavourite);
     };
 
     getRouter = () => { return this.#router; };

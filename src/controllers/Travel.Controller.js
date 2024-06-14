@@ -6,7 +6,7 @@ import FavouritesService from "../services/Favourites.service.js"
 import LoginService from "../services/Login.service.js"
 import ForecastService from "../services/Forecast.service.js"
 import User from "../models/User.model.js"
-import { validationResult } from "express-validator"
+import {  validationResult } from "express-validator"
 import jwt from "jsonwebtoken";
 
 
@@ -29,6 +29,7 @@ export default class TravelController{
         this.#forecastService = forecastService;
         //this.#changePasswordService = changePasswordService;
     }
+    //User options
 
     getFavourites = async (req, res) => {
         try {
@@ -50,6 +51,34 @@ export default class TravelController{
             res.status(500).json({ message: e.message });
         }
     };
+
+    addFavourite = async (req, res) => {
+        try {
+            const errors = validationResult(req); 
+            if (!errors.isEmpty()) {
+                return res.status(422).json({ message: 'Validation failed', errors: errors.array() });
+            } 
+            
+            let favourite = await this.#favService.addFavourite(req.body.name, req.userId) 
+
+            if (!(favourite instanceof Error)) {
+                                const payload = await this.#favService.getFavourites(req.userId)
+                
+                res.status(200).json({ message: "Favourite added", favourites: payload })
+            } else {
+                
+                if (favourite.message === "Data already exists") {                    
+                    res.status(400).json({ message: favourite.message });
+                }
+                throw new Error();
+            }
+        } catch (e) {
+            res.status(500).json({ message: e.message });
+        }
+    
+    };
+
+    //Account Functions
 
     signup = async (req, res) => {
         try {
@@ -98,14 +127,11 @@ export default class TravelController{
 
             const user = await User.findOne({ userName: username });
 
-
             if (!user) { throw new Error("Invalid login details"); }
         
-            const passwordMatches = await bcrypt.compare(password, user.userPassword);
-       
+            const passwordMatches = await bcrypt.compare(password, user.userPassword);       
 
-            if (!passwordMatches && user._id === idNum) { throw new Error("Invalid login details"); }
-            
+            if (!passwordMatches && user._id === idNum) { throw new Error("Invalid login details"); }            
         
             user.userPassword = bcrypt.hashSync(newpassword, 8);
 

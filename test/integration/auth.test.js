@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import Sinon from "sinon";
 import supertest from "supertest";
 
@@ -367,6 +367,7 @@ describe("Integration Tests", () => {
     describe("Tests of favourites routes", () => {
         let token;
         let userIDnum;
+        const expiredToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NmI0OGQyMGYxNTFjNDhjYzg3YTEzNyIsInVzZXJuYW1lIjoidGVzdEd1eSIsImlhdCI6MTcxODMwNzAyNiwiZXhwIjoxNzE4MzA3MDM2fQ.EymDkb1G3xM-FsXmpC-7OU86iddbHT94GV9ZqulmXyA";
 
         beforeEach(async () => {
             
@@ -398,8 +399,7 @@ describe("Integration Tests", () => {
                 const fav1 = new Favourite({ name: "Leeds, GB", userID: userIDnum })
                 fav1.save();
                 const fav2 = new Favourite({ name: "London, GB", userID: userIDnum })
-                fav2.save();
-                console.log(token, `<---`);
+                fav2.save();                
                 //Act
                 const response = await request.get("/favourites").set("token", token)
 
@@ -449,9 +449,82 @@ describe("Integration Tests", () => {
         describe("Accessing protected route with expired token", () => {
             it("Should respond with token expired error", async () => {
                 //Arrange
-                const expiredToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NmI0OGQyMGYxNTFjNDhjYzg3YTEzNyIsInVzZXJuYW1lIjoidGVzdEd1eSIsImlhdCI6MTcxODMwNzAyNiwiZXhwIjoxNzE4MzA3MDM2fQ.EymDkb1G3xM-FsXmpC-7OU86iddbHT94GV9ZqulmXyA";
+                
                 //Act
                 const response = await request.get("/favourites").set("token", expiredToken);
+                //Assert
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+            });
+        });
+
+        describe("Adding a favourite to the list of favourites", () => {
+            it("Should respond with 200 and a confirmation that the favourite was added", async () => {
+                //Arrange
+                const payload = { name: "Leeds, GB" }
+                               
+                //Act
+                const response = await request.post("/addfavourite").set("token", token).send(payload);
+
+                //Assert
+                expect(response.status).to.equal(200);
+                expect(response.body).to.have.property('message').that.includes('Favourite added');
+            });
+        });
+
+        describe("Adding the same favourite to the list of favourites twice", () => {
+            it("Should respond with 400 and a bad request", async () => {
+                //Arrange
+                const payload = { name: "Leeds, GB" }                               
+                await request.post("/addfavourite").set("token", token).send(payload);
+                //Act
+                const response = await request.post("/addfavourite").set("token", token).send(payload);
+
+                //Assert
+                expect(response.status).to.equal(400);
+                expect(response.body).to.not.have.property('favourites');
+            });
+        });
+
+        describe("Adding a favourite with no text", () => {
+            it("Should respond with 400 and a bad request", async () => {
+                //Arrange
+                const payload = { name: ''}                               
+                await request.post("/addfavourite").set("token", token).send(payload);
+                //Act
+                const response = await request.post("/addfavourite").set("token", token).send(payload);
+                
+
+                //Assert
+                expect(response.status).to.equal(422);
+                expect(response.body).to.not.have.property('favourites');
+
+                
+            });
+        });
+
+        describe("Adding a favourite to the list of favourites with an bad token", () => {
+            it("Should respond with 401", async () => {
+                //Arrange
+                const payload = { name: "Leeds, GB" }
+                               
+                //Act
+                const response = await request.post("/addfavourite").set("token", "BadToken").send(payload);
+
+                //Assert
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+            });
+        });
+
+        describe("Adding a favourite to the list of favourites with an expired token", () => {
+            it("Should respond with 401g", async () => {
+                //Arrange
+                const payload = { name: "Leeds, GB" }
+                               
+                //Act
+                const response = await request.post("/addfavourite").set("token", expiredToken).send(payload);
+
                 //Assert
                 expect(response.status).to.equal(401);
                 expect(response.body).to.have.property('message').that.includes('Unauthorised');
