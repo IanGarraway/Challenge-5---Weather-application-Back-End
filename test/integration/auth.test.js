@@ -537,20 +537,73 @@ describe("Integration Tests", () => {
                 let payload = { name: "Leeds, GB" }
                 await request.post("/addfavourite").set("token", token).send(payload);
                 const favourites = await Favourite.find(); 
-                payload = { favID: favourites[0]._id };  
-                
+                payload = { favID: favourites[0]._id };                  
                               
                 //Act
                 const response = await request.post("/remfav").set("token", token).send(payload);
-
-                //console.log(response);
-
 
                 //Assert
                 const confirmFavs = await Favourite.find();                
                 expect(response.status).to.equal(200);
                 expect(response.body).to.have.property('message').that.includes('Favourite removed');
                 expect(confirmFavs).to.be.an('array').that.has.lengthOf(0);
+            });
+        });
+
+        describe("removing a favourite to the list of favourites without a favourite id", () => {
+            it("Should respond with 422 and a validation fail", async () => {
+                //Arrange
+                let payload = { name: "Leeds, GB" }
+                await request.post("/addfavourite").set("token", token).send(payload);
+                const favourites = await Favourite.find(); 
+                payload = { favID: ""};                  
+                              
+                //Act
+                const response = await request.post("/remfav").set("token", token).send(payload);
+
+                //Assert
+                const confirmFavs = await Favourite.find();                
+                expect(response.status).to.equal(422);
+                expect(response.body).to.have.property('message').that.includes('Validation failed');
+                expect(confirmFavs).to.be.an('array').that.has.lengthOf(1);
+            });
+        });
+
+        describe("removing a favourite to the list of favourites without a valid token", () => {
+            it("Should respond with 401 and a validation fail", async () => {
+                //Arrange
+                let payload = { name: "Leeds, GB" }
+                await request.post("/addfavourite").set("token", token).send(payload);
+                const favourites = await Favourite.find(); 
+                payload = { favID: favourites[0]._id};                  
+                              
+                //Act
+                const response = await request.post("/remfav").set("token", "badtoken").send(payload);
+
+                //Assert
+                const confirmFavs = await Favourite.find();                
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+                expect(confirmFavs).to.be.an('array').that.has.lengthOf(1);
+            });
+        });
+
+        describe("removing a favourite to the list of favourites with an expired token", () => {
+            it("Should respond with 401 and a validation fail", async () => {
+                //Arrange
+                let payload = { name: "Leeds, GB" }
+                await request.post("/addfavourite").set("token", token).send(payload);
+                const favourites = await Favourite.find(); 
+                payload = { favID: favourites[0]._id};                  
+                              
+                //Act
+                const response = await request.post("/remfav").set("token", expiredToken).send(payload);
+
+                //Assert
+                const confirmFavs = await Favourite.find();                
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+                expect(confirmFavs).to.be.an('array').that.has.lengthOf(1);
             });
         });
         
