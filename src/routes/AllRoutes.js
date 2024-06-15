@@ -32,6 +32,7 @@ export default class AllRoutes{
 
         //Auth routes
         this.#router.post('/newuser', [
+            
             body(`email`).exists().normalizeEmail().notEmpty().escape().isEmail(),
             body(`username`).exists().notEmpty().escape(),
             body('password').exists().notEmpty().escape(),

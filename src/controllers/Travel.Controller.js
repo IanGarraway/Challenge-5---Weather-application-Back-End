@@ -107,11 +107,12 @@ export default class TravelController{
     //Account Functions
 
     signup = async (req, res) => {
+        console.log(req.body);
         try {
             const errors = validationResult(req);            
             if (!errors.isEmpty()) {
                 return res.status(422).json({ message: 'Validation failed', errors: errors.array() });
-            } 
+            }             
 
             const user = new User({
                 userName: req.body.username,
@@ -121,9 +122,7 @@ export default class TravelController{
             });            
 
             await user.save()
-
-            return res.status(201).send({ message: `User was registered successfully` });
-                
+            return res.status(201).send({ message: `User was registered successfully` });                
                 
         } catch (err) {
             console.log(err);
@@ -139,8 +138,8 @@ export default class TravelController{
             const user = await this.#loginService.login(req.body);            
             res.status(200)
                 .cookie('token', user.Token, {httpOnly: true, secure: false, sameSite: 'Strict', maxAge: 86400})
-                .send({message: "User has logged in"             
-            });
+                .send({ message: "User has logged in", username: user.userName }
+            );
         } catch (error) {
             res.status(401).json(error);
         }
