@@ -137,9 +137,9 @@ export default class TravelController{
     login = async (req, res) => {
         try {            
             const user = await this.#loginService.login(req.body);            
-            res.status(200).send({
-                message: "User has logged in",
-                token: user.Token
+            res.status(200)
+                .cookie('token', user.Token, {httpOnly: true, secure: false, sameSite: 'Strict', maxAge: 86400})
+                .send({message: "User has logged in"             
             });
         } catch (error) {
             res.status(401).json(error);

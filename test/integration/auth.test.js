@@ -212,9 +212,11 @@ describe("Integration Tests", () => {
                     //Act
                     const response = await request.post("/login").send(newLogin);
                     
+                    
                     //Assert
                     expect(response.status).to.equal(200);
-                    expect(response.body).to.have.property('token')
+                    expect(response.headers['set-cookie']).to.satisfy(cookies => cookies.some(cookie => cookie.startsWith('token='))
+                    );
 
 
                 });
@@ -291,7 +293,10 @@ describe("Integration Tests", () => {
                         "password": "test"
                     };                    
                 const response = await request.post("/login").send(testLogin);
-                token = response.body.token;
+                
+                const tokenCookie = response.headers['set-cookie'].find(cookie => cookie.startsWith('token='));
+                token = tokenCookie.split(';')[0].split('=')[1];
+                
                 
             });
             describe("confirm the password change route works and you can then log in with the new password", () => {
@@ -302,7 +307,9 @@ describe("Integration Tests", () => {
                     const newLogin = { "username": userName, "password": newPass};
                                         
                     //act
-                    const response = await request.post("/changepassword").set("token", token).send(payload);
+                    const response = await request.post("/changepassword")
+                        .set('Cookie',`token=${token}`)
+                        .send(payload);
 
                     const loginRes = await request.post("/login").send(newLogin);
 
@@ -310,7 +317,8 @@ describe("Integration Tests", () => {
                     //assert
                     expect(response.status).to.equal(200);
                     expect(loginRes.status).to.equal(200);
-                    expect(loginRes.body).to.have.property('token')
+                    expect(loginRes.headers['set-cookie']).to.satisfy(cookies => cookies.some(cookie => cookie.startsWith('token='))
+                    );
 
                }) 
             });    
@@ -323,7 +331,7 @@ describe("Integration Tests", () => {
                     const payload = { "username": userName, "password": badPass, "newpassword": newPass };                    
                                         
                     //act
-                    const response = await request.post("/changepassword").set("token", token).send(payload); 
+                    const response = await request.post("/changepassword").set('Cookie',`token=${token}`).send(payload); 
 
                     //assert
                     //console.log(response);
@@ -339,7 +347,7 @@ describe("Integration Tests", () => {
                     const payload = { "username": userName, "password": oldPass, "newpassword": newPass };                   
                                         
                     //act
-                    const response = await request.post("/changepassword").set("token", "sdfsdfsdfsdf").send(payload); 
+                    const response = await request.post("/changepassword").set('Cookie',`token=234234efd`).send(payload); 
 
                     //assert
                     expect(response.status).to.equal(401);   
@@ -384,7 +392,8 @@ describe("Integration Tests", () => {
                 "password": "test"
             };
             const response = await request.post("/login").send(newLogin);
-            token = response.body.token;
+            const tokenCookie = response.headers['set-cookie'].find(cookie => cookie.startsWith('token='));
+            token = tokenCookie.split(';')[0].split('=')[1];            
             
             const user = await User.findOne({ userName: "testGuy" });
             userIDnum = user._id;
@@ -401,7 +410,7 @@ describe("Integration Tests", () => {
                 const fav2 = new Favourite({ name: "London, GB", userID: userIDnum })
                 fav2.save();                
                 //Act
-                const response = await request.get("/favourites").set("token", token)
+                const response = await request.get("/favourites").set('Cookie',`token=${token}`)
 
                 //Assert
                 expect(response.status).to.equal(200);
@@ -419,7 +428,7 @@ describe("Integration Tests", () => {
                 fav2.save();
                 
                 //Act
-                const response = await request.get("/favourites").set("token", "badtoken")
+                const response = await request.get("/favourites").set('Cookie',`token=badToken`)
 
                 //Assert
                 expect(response.status).to.equal(401);
@@ -451,7 +460,7 @@ describe("Integration Tests", () => {
                 //Arrange
                 
                 //Act
-                const response = await request.get("/favourites").set("token", expiredToken);
+                const response = await request.get("/favourites").set('Cookie',`token=${expiredToken}`)
                 //Assert
                 expect(response.status).to.equal(401);
                 expect(response.body).to.have.property('message').that.includes('Unauthorised');
@@ -464,7 +473,7 @@ describe("Integration Tests", () => {
                 const payload = { name: "Leeds, GB" }
                                
                 //Act
-                const response = await request.post("/addfavourite").set("token", token).send(payload);
+                const response = await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
 
                 //Assert
                 expect(response.status).to.equal(200);
@@ -476,9 +485,9 @@ describe("Integration Tests", () => {
             it("Should respond with 400 and a bad request", async () => {
                 //Arrange
                 const payload = { name: "Leeds, GB" }                               
-                await request.post("/addfavourite").set("token", token).send(payload);
+                await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 //Act
-                const response = await request.post("/addfavourite").set("token", token).send(payload);
+                const response = await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
 
                 //Assert
                 expect(response.status).to.equal(400);
@@ -490,9 +499,9 @@ describe("Integration Tests", () => {
             it("Should respond with 400 and a bad request", async () => {
                 //Arrange
                 const payload = { name: ''}                               
-                await request.post("/addfavourite").set("token", token).send(payload);
+                await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 //Act
-                const response = await request.post("/addfavourite").set("token", token).send(payload);
+                const response = await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 
 
                 //Assert
@@ -509,7 +518,7 @@ describe("Integration Tests", () => {
                 const payload = { name: "Leeds, GB" }
                                
                 //Act
-                const response = await request.post("/addfavourite").set("token", "BadToken").send(payload);
+                const response = await request.post("/addfavourite").set('Cookie',`token=badtoken`).send(payload);
 
                 //Assert
                 expect(response.status).to.equal(401);
@@ -523,7 +532,7 @@ describe("Integration Tests", () => {
                 const payload = { name: "Leeds, GB" }
                                
                 //Act
-                const response = await request.post("/addfavourite").set("token", expiredToken).send(payload);
+                const response = await request.post("/addfavourite").set('Cookie',`token=${expiredToken}`).send(payload);
 
                 //Assert
                 expect(response.status).to.equal(401);
@@ -535,12 +544,12 @@ describe("Integration Tests", () => {
             it("Should respond with 200 and a confirmation that the favourite was removed", async () => {
                 //Arrange
                 let payload = { name: "Leeds, GB" }
-                await request.post("/addfavourite").set("token", token).send(payload);
+                await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 const favourites = await Favourite.find(); 
                 payload = { favID: favourites[0]._id };                  
                               
                 //Act
-                const response = await request.post("/remfav").set("token", token).send(payload);
+                const response = await request.post("/remfav").set('Cookie',`token=${token}`).send(payload);
 
                 //Assert
                 const confirmFavs = await Favourite.find();                
@@ -554,12 +563,12 @@ describe("Integration Tests", () => {
             it("Should respond with 422 and a validation fail", async () => {
                 //Arrange
                 let payload = { name: "Leeds, GB" }
-                await request.post("/addfavourite").set("token", token).send(payload);
+                await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 const favourites = await Favourite.find(); 
                 payload = { favID: ""};                  
                               
                 //Act
-                const response = await request.post("/remfav").set("token", token).send(payload);
+                const response = await request.post("/remfav").set('Cookie',`token=${token}`).send(payload);
 
                 //Assert
                 const confirmFavs = await Favourite.find();                
@@ -573,12 +582,12 @@ describe("Integration Tests", () => {
             it("Should respond with 401 and a validation fail", async () => {
                 //Arrange
                 let payload = { name: "Leeds, GB" }
-                await request.post("/addfavourite").set("token", token).send(payload);
+                await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 const favourites = await Favourite.find(); 
                 payload = { favID: favourites[0]._id};                  
                               
                 //Act
-                const response = await request.post("/remfav").set("token", "badtoken").send(payload);
+                const response = await request.post("/remfav").set('Cookie',`token=badToken`).send(payload);
 
                 //Assert
                 const confirmFavs = await Favourite.find();                
@@ -592,12 +601,12 @@ describe("Integration Tests", () => {
             it("Should respond with 401 and a validation fail", async () => {
                 //Arrange
                 let payload = { name: "Leeds, GB" }
-                await request.post("/addfavourite").set("token", token).send(payload);
+                await request.post("/addfavourite").set('Cookie',`token=${token}`).send(payload);
                 const favourites = await Favourite.find(); 
                 payload = { favID: favourites[0]._id};                  
                               
                 //Act
-                const response = await request.post("/remfav").set("token", expiredToken).send(payload);
+                const response = await request.post("/remfav").set('Cookie',`token=${expiredToken}`).send(payload);
 
                 //Assert
                 const confirmFavs = await Favourite.find();                

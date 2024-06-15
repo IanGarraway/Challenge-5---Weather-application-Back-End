@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express from 'express';
 
@@ -26,6 +27,7 @@ export default class Server {
         })
 
         this.#app.use(express.json());
+        this.#app.use(cookieParser())
         this.#app.use(
             this.#router.getRouteStartPoint(),
             this.#router.getRouter()
