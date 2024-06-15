@@ -32,6 +32,7 @@ export default class TravelController{
     //User options
 
     getFavourites = async (req, res) => {
+        console.log(`<---`);
         try {
             
             let favourites = await this.#favService.getFavourites(req.userId)            
@@ -135,9 +136,15 @@ export default class TravelController{
 
     login = async (req, res) => {
         try {            
-            const user = await this.#loginService.login(req.body);            
+            const user = await this.#loginService.login(req.body);  
+            //console.log(user.Token, `<--setting cookie value`);
             res.status(200)
-                .cookie('token', user.Token, {httpOnly: true, secure: false, sameSite: 'Strict', maxAge: 86400})
+                .cookie('token', user.Token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'Strict',
+                    maxAge: 86400000
+                })
                 .send({ message: "User has logged in", username: user.userName }
             );
         } catch (error) {
