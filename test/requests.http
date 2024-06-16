@@ -5,6 +5,10 @@ GET http://127.0.0.1:3000/About?location=Leeds,%20GB
 
 ###
 
+GET http://127.0.0.1:3000/About?location=scarb
+
+###
+
 POST http://127.0.0.1:3000/newuser
 content-type: application/json
 {
