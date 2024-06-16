@@ -11,13 +11,19 @@ const updateState = (data) => {
             temp: currentData.main.temp,
         });
     }
+
+    const forecast = {
+        weather: tempDays,
+        city: data.city
+    }    
     
-    return tempDays;
+    return forecast;
 };
 
 
 // returns array with Indices of the next five days in the list from the API data (every day at 12:00 pm)
 const getDayIndices = (data) => {
+    
     let dayIndices = [0];
     let currentDay = data.list[0].dt_txt.slice(8, 10);
 
@@ -35,6 +41,8 @@ const getDayIndices = (data) => {
             }
         }
     }
+    
+
     return dayIndices;
 };
 

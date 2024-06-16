@@ -18,6 +18,7 @@ export default class FavouritesService{
     }
 
     remFavourite = async (favID, userIDnum) => {
+        console.log(`Remove Fav `);
         try {
             if ((await Favourite.find({ _id: favID, userID: userIDnum })).length === 0) { return new Error("Favourite doesn't exist"); }
 

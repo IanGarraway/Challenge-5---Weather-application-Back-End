@@ -358,19 +358,43 @@ describe("Integration Tests", () => {
     });
 
     describe("Test of forecast route", () => {
-        describe("making a request to /about returns an array of 5 elements",  () => {
+        describe("making a request to /about returns an array of 5 elements", () => {
             it("should return 200 and an array of 5 elements", async () => {
                 //arrange
             
                 //act
                 const response = await request.get("/about/?location=Leeds,%20GB");
+
+                // console.log("Full body response", response.body);
+                // console.log("Weather array", response.body.weather);
             
-                //assert                
+                //assert
+                // expect(response.status).to.equal(200);
+                // expect(response.body).to.have.property('weather').that.is.an('array').that.has.lengthOf(5);
+                
                 expect(response.status).to.equal(200);
-                expect(response.body).to.be.an('array').that.has.lengthOf(5);
+
+                // Check the city object
+                expect(response.body).to.have.property('city');
+                expect(response.body.city).to.be.an('object');
+                expect(response.body.city).to.have.property('name', 'Leeds');
+                expect(response.body.city).to.have.property('country', 'GB');
+
+                // Check the weather array
+                expect(response.body).to.have.property('weather');
+                expect(response.body.weather).to.be.an('array').that.has.lengthOf(5);
+
+                // Further assertions to verify the structure of each weather object
+                response.body.weather.forEach((weather, index) => {
+                    expect(weather).to.be.an('object');
+                    expect(weather).to.have.property('date').that.is.a('string');
+                    expect(weather).to.have.property('weather_desc').that.is.a('string');
+                    expect(weather).to.have.property('icon').that.is.a('string');
+                    expect(weather).to.have.property('temp').that.is.a('number');
+                });
             });
         });
-    }); 
+    });
     
     describe("Tests of favourites routes", () => {
         let token;
@@ -617,4 +641,4 @@ describe("Integration Tests", () => {
         });
         
     });
-});
+})

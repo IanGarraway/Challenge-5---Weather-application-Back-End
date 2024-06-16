@@ -31,8 +31,7 @@ export default class TravelController{
     }
     //User options
 
-    getFavourites = async (req, res) => {
-        console.log(`<---`);
+    getFavourites = async (req, res) => {        
         try {
             
             let favourites = await this.#favService.getFavourites(req.userId)            
@@ -65,23 +64,23 @@ export default class TravelController{
             if (!(favourite instanceof Error)) {
                                 const payload = await this.#favService.getFavourites(req.userId)
                 
-                res.status(200).json({ message: "Favourite added", favourites: payload })
+                return res.status(200).json({ message: "Favourite added", favourites: payload })
             } else {
                 
                 if (favourite.message === "Data already exists") {                    
-                    res.status(400).json({ message: favourite.message });
+                    return res.status(400).json({ message: favourite.message });
                 }
                 throw new Error();
             }
         } catch (e) {
-            res.status(500).json({ message: e.message });
+            return res.status(500).json({ message: e.message });
         }
     
     };
 
     remFavourite = async (req, res) => {
-        try {
-            console.log( `<--`);
+        try {   
+            console.log(`Controller`);
             const errors = validationResult(req); 
             if (!errors.isEmpty()) {
                 return res.status(422).json({ message: 'Validation failed', errors: errors.array() });
@@ -91,24 +90,23 @@ export default class TravelController{
             if (!(favourite instanceof Error)) {
                                 const payload = await this.#favService.getFavourites(req.userId)
                 
-                res.status(200).json({ message: "Favourite removed", favourites: payload })
+                return res.status(200).json({ message: "Favourite removed", favourites: payload })
             } else {
                 
                 if (favourite.message === "Favourite doesn't exist") {                    
-                    res.status(400).json({ message: favourite.message });
+                    return res.status(400).json({ message: favourite.message });
                 }
                 throw new Error();
             }
         } catch (e) {
-            res.status(500).json({ message: e.message });
+            return res.status(500).json({ message: e.message });
         }
         
     }
 
     //Account Functions
 
-    signup = async (req, res) => {
-        console.log(req.body);
+    signup = async (req, res) => {        
         try {
             const errors = validationResult(req);            
             if (!errors.isEmpty()) {
@@ -136,8 +134,7 @@ export default class TravelController{
 
     login = async (req, res) => {
         try {            
-            const user = await this.#loginService.login(req.body);  
-            //console.log(user.Token, `<--setting cookie value`);
+            const user = await this.#loginService.login(req.body);              
             res.status(200)
                 .cookie('token', user.Token, {
                     httpOnly: true,

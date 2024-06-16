@@ -19,19 +19,16 @@ describe("Forecast service", () => {
     });
 
     describe("get forecast",  () => {
-        it("Should return an array of length 5 ",async () => {
-           //Arrange
-        console.log("test");
+        it("Should return an array of length 5 ", async () => {
+            //Arrange        
 
-        //Act
-        let forecast = await forecastService.getForecast("Leeds, GB");
-        
-
-        
-        console.log(`-->{forecast}`);
-        //Assert
-
-        expect(forecast).to.be.an('array').that.has.lengthOf(5); 
+            //Act
+            let forecast = await forecastService.getForecast("Leeds, GB");
+            //Assert
+            
+            expect(forecast.city).to.have.property('name', 'Leeds');
+            expect(forecast.city).to.have.property('country', 'GB');
+            expect(forecast.weather).to.be.an('array').that.has.lengthOf(5);
         });
         
     })
