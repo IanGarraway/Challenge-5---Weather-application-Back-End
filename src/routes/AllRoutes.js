@@ -5,6 +5,8 @@ import TravelController from "../controllers/Travel.Controller.js";
 import FavouriteValidator from "../middleware/Favourite.validator.js";
 import LoginValidator from "../middleware/Login.Validator.js";
 import VerifySignUp from "../middleware/VerifySignUp.js";
+import pkg from "jsonwebtoken";
+const { verify } = pkg;
 
 
 export default class AllRoutes{
@@ -45,6 +47,11 @@ export default class AllRoutes{
             body('password').exists().notEmpty().escape()
             
         ], this.#controller.login);
+
+        this.#router.post('/logout', [
+            LoginValidator.verifyToken
+
+        ], this.#controller.logout);
 
         this.#router.post('/changepassword', [
             body(`username`).exists().notEmpty().escape(),

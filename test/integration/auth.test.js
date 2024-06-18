@@ -355,6 +355,62 @@ describe("Integration Tests", () => {
                }) 
             }); 
         });
+
+        describe("Logout tests", () => {
+            let token;
+            let userIDnum;
+
+            beforeEach(async () => {
+                const newuser = {
+                    "username": "testGuy",
+                    "password": "test",
+                    "email": "testguy@test.com",
+                    "name": "Test Guy"
+                };
+                await request.post("/newuser").send(newuser);
+
+                const newLogin = {
+                    "username": "testGuy",
+                    "password": "test"
+                };
+                const response = await request.post("/login").send(newLogin);
+                const tokenCookie = response.headers['set-cookie'].find(cookie => cookie.startsWith('token='));
+                token = tokenCookie.split(';')[0].split('=')[1];                
+            });
+
+            afterEach(() => {
+                token = null;
+            });
+
+            it("Should log out the user and expire the token cookie", async () => {
+                // Act
+                const response = await request.post("/logout").set('Cookie', `token=${token}`);
+
+                // Assert                
+                expect(response.status).to.equal(200);
+                expect(response.headers['set-cookie']).to.satisfy(cookies =>
+                    cookies.some(cookie => cookie.startsWith('token=') && cookie.includes('Max-Age=0'))
+                );
+            });
+
+            it("Should return 401 when trying to log out without a token", async () => {
+                // Act
+                const response = await request.post("/logout");
+
+                // Assert
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+            });
+
+            it("Should return 401 when trying to log out with an invalid token", async () => {
+                // Act
+                const response = await request.post("/logout").set('Cookie', `token=invalidToken`);
+
+                // Assert
+                expect(response.status).to.equal(401);
+                expect(response.body).to.have.property('message').that.includes('Unauthorised');
+            });
+        });
     });
 
     describe("Test of forecast route", () => {
@@ -462,7 +518,7 @@ describe("Integration Tests", () => {
         });
 
         describe("Get Favourites refuses connections when no token passed", () => {
-            it("Should return an 403 status error", async () => {
+            it("Should return an 401 status error", async () => {
                 //Arrange
                 const fav1 = new Favourite({ name: "Leeds, GB", userID: userIDnum })
                 fav1.save();
@@ -473,7 +529,7 @@ describe("Integration Tests", () => {
                 const response = await request.get("/favourites")
 
                 //Assert
-                expect(response.status).to.equal(403);
+                expect(response.status).to.equal(401);
                 
 
             });
@@ -641,4 +697,6 @@ describe("Integration Tests", () => {
         });
         
     });
+
+
 })

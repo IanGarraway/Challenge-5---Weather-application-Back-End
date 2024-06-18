@@ -45,8 +45,9 @@ export default class TravelController{
 
     getForecast = async (req, res) => {
         try {
-            let location = req.query.location;                      
-            res.json(await this.#forecastService.getForecast(location));
+            let location = req.query.location;  
+            const forecast = await this.#forecastService.getForecast(location)            
+            res.json(forecast);
         } catch (e) {
             res.status(500).json({ message: e.message });
         }
@@ -147,6 +148,22 @@ export default class TravelController{
             res.status(401).json(error);
         }
                 
+    }
+
+    logout = async (req, res) => {
+        
+        try { 
+            res.status(200)
+                .cookie('token', "logoutToken", {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'Strict',
+                    maxAge: 0
+                })
+                .send({ message: "User has logged in" });            
+        } catch (error) {
+            res.status(500).json(error);
+        }                
     }
 
     changePassword = async (req, res) => {

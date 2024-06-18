@@ -9,7 +9,7 @@ export default class LoginValidator{
         
 
         if (!token) {
-            return res.status(403).send({ message: `Unauthorised` });
+            return res.status(401).send({ message: `Unauthorised` });
         }
         jwt.verify(token, process.env.SECRET, (err, decoded) => {
             if (err) {
