@@ -5,8 +5,7 @@ import User from "../models/User.model.js";
 export default class LoginValidator{
 
     static verifyToken = (req, res, next) => {
-        let token = req.cookies.token;  
-        
+        let token = req.cookies.token;          
 
         if (!token) {
             return res.status(401).send({ message: `Unauthorised` });

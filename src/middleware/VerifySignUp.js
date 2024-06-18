@@ -26,5 +26,4 @@ export default class VerifySignUp{
                 res.status(500).send({ message: err.message || "Some error occurred while verifying user." });
         }
     };
-
 }

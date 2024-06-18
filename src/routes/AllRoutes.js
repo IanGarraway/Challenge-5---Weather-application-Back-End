@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import TravelController from "../controllers/Travel.Controller.js";
-
-import FavouriteValidator from "../middleware/Favourite.validator.js";
 import LoginValidator from "../middleware/Login.Validator.js";
 import VerifySignUp from "../middleware/VerifySignUp.js";
 import pkg from "jsonwebtoken";

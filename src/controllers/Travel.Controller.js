@@ -150,8 +150,7 @@ export default class TravelController{
                 
     }
 
-    logout = async (req, res) => {
-        
+    logout = async (req, res) => {        
         try { 
             res.status(200)
                 .cookie('token', "logoutToken", {
