@@ -2,6 +2,8 @@
 
 ## debugging
 
+Chatgpt was used in a browser, while code was copied into the prompts, I mostly avoided copy and pasting the responses into my own code. The biggest exception to this was in using chatgpt to write the tests for the log out route.
+
 ### issue with implementing cors for use with the AWT in a cookie
 
 ChatGPT
@@ -4934,3 +4936,103 @@ This should ensure that the logout functionality works correctly and the tests p
 ChatGPT can make mistakes. Check important info.
 
 ChatGPT
+
+## generating additional user stories
+
+### Prompt
+
+ChatGPT
+User Stories
+
+Kanban board
+User Story 1
+
+As the front end, I want to be able to send registration details to the back end to create a new user account, so that we can have new users added to the site
+User Story 2
+
+As a front end, I want to be able to send the login details to the backend service to authenticate a user, so it can be confirmed they are a legitimate user
+User Story 3
+
+As a front end I want to be able to send a password change request to the backend to allow a user to update their password, so the user can change the password stored in the system
+User Story 4
+
+As the owner, I want only authenticated users to be able to access back end services, so I know who is using them
+User story 5
+
+As a front end, i want to be able to request the stored favourite locations of an authenticated user
+User Story 6
+
+As a front end, I want to be able to add new locations to an authenticated user's favourite locations list
+User Story 7
+
+As a front end, I want to be able to send a request to remove an authenticated users favourite locations
+
+these are the user stories, I wish to add additional ones for the use of AWT tokens in cookies and for logging out
+
+### response
+
+ChatGPT
+
+Certainly! Here are additional user stories incorporating the use of JWT (JSON Web Tokens) in cookies for authentication and for logging out:
+User Story 8
+
+As a front end, I want to be able to store JWT tokens in secure cookies after user login, so that user sessions can be managed securely without exposing tokens to potential threats like XSS attacks.
+Acceptance Criteria:
+
+    After successful login, the JWT token is stored in a secure, HTTP-only cookie.
+    The token should have an appropriate expiration time set.
+    Secure flag should be set on the cookie to ensure it is only sent over HTTPS.
+
+User Story 9
+
+As a front end, I want to be able to include JWT tokens from cookies in requests to the backend services, so that authentication can be verified for each request.
+Acceptance Criteria:
+
+    Every request to a backend service should include the JWT token stored in the secure cookie.
+    The backend should validate the token and return an appropriate response if the token is missing or invalid.
+    The front end should handle cases where the token is expired or invalid and redirect the user to the login page.
+
+User Story 10
+
+As a user, I want to be able to log out, so that my session is terminated and my JWT token is invalidated.
+Acceptance Criteria:
+
+    When the user logs out, the JWT token should be removed from the secure cookie.
+    Any subsequent requests using the invalidated token should be rejected by the backend.
+    The user should be redirected to the login page after logging out.
+
+Would you like to add more details to these user stories or create additional ones?
+
+### prompt
+
+It was also suggested adding a map API proxy service and a Hotel aPI proxy service which will show a map of the city being looked at and hotels in that area. Can you generate user stories for these two situations?
+
+### response
+
+ChatGPT
+
+Sure! Here are the user stories for integrating a map API proxy service and a hotel API proxy service:
+User Story 11
+
+As a front end, I want to be able to send requests to a map API proxy service, so that I can retrieve and display a map of a specific city.
+Acceptance Criteria:
+
+    The front end should be able to send requests to the map API proxy service with the name of the city.
+    The map API proxy service should retrieve map data from a third-party map API (e.g., Google Maps, Mapbox) and return it to the front end.
+    The front end should display the map of the specified city using the data returned from the map API proxy service.
+    The map should support basic interactions like zooming and panning.
+
+User Story 12
+
+As a front end, I want to be able to send requests to a hotel API proxy service, so that I can retrieve a list of hotels in a specific city and display them on the map.
+Acceptance Criteria:
+
+    The front end should be able to send requests to the hotel API proxy service with the name of the city or coordinates.
+    The hotel API proxy service should retrieve hotel data from a third-party hotel API (e.g., Booking.com, Expedia) and return it to the front end.
+    The front end should display the list of hotels on the map, with markers indicating their locations.
+    Each hotel marker should be interactive, providing additional details like name, rating, and price when clicked.
+
+Would you like any further details or additional user stories?
+ChatGPT can make mistakes. Check important info.
+
+
