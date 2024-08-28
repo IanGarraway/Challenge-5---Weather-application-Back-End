@@ -82,10 +82,10 @@ Bcrypt is used to hash user passwords on account creation and to confirm the sub
 
 #### Authorisation and Authentication  
 
-As part of the login process a Jsonwebtoken is used to confirm a user is logged in, this is stored in a http only cookie, which was chosen as it is more secure than using local storage or a non http only cookie which can be accessed on a client machine by malicious code. Like the cookies holding them, these are set to expire after 24 hours.
+As part of the login process a Jsonwebtoken is created and used to confirm a user is logged in, this is stored in a http only cookie, which was chosen as it is more secure than using local storage or a non http only cookie which can be accessed on a client machine by malicious code. Like the cookies holding them, these are set to expire after 24 hours.
 
 cookie-parser is used to handle cookies on the requests, to access the token, so it can be used to confirm the user is correctly logged in.
 
 ### Testing
 
-Development was done using a Test Driven Development methodology. While some unit tests were applied to methods where possible, the majority of the testing took on the form of integration tests, on the routes themselves. For each route I started with the basic correct response test and developed the code to ensure it passed.  A request would be sent to the server and then the result checked against what it should be. To facilitate this Chai, Mocha and Supertest were used, with c8 tracking coverage. 96.81% of the code has been tested. 
+Development was done using a Test Driven Development methodology. While some unit tests were applied to methods where possible, the majority of the testing took on the form of integration tests, on the routes themselves. For each route I started with the basic correct response test and developed the code to ensure it passed.  A request would be sent to the server and then the result checked against what it should be. To facilitate this Chai, Mocha and Supertest were used, with c8 tracking coverage. 96.81% of the code has been tested.
