@@ -45,7 +45,7 @@ This is challenge is complimentary to the work completed for Challenge 4, a Reac
    - The problems that the backend services will solve
    - The benefits that the backend services will bring to the user
    - The impact that the backend services will have on the customer's business
-2. From the requirements listed above, devise a set of user stories that describe the functionality that the client has requested
+2. From the requirements ([see original readme](Challenge%205%20README.md)), devise a set of user stories that describe the functionality that the client has requested
 3. Create a set of routing diagrams that show how the backend services will be accessed by the frontend application
 4. Create the application using a test-driven development (TDD) approach and the NodeJS/Express/MongoDB stack
 
