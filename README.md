@@ -37,11 +37,9 @@ In this repo you will find the code for the 5th Challenge set on the Digitial Fu
 
 This is challenge is complimentary to the work completed for Challenge 4, a React front end for the Travel information website, the repo for which can [here](https://github.com/IanGarraway/DF-Challenge-4---Travel-Info-Front-End)
 
-This challenge consisted of the following:
-
 ---
 
-### Tasks
+### The Challenge Tasks
 
 1. Explain why the customer needs the backend services and the benefits that it will bring to them.  You should include the following in your explanation:
    - The problems that the backend services will solve
