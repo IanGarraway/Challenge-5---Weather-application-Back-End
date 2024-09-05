@@ -62,6 +62,8 @@ The full instructions can be found in the original project readme.md [here](Chal
 
 A single Miro Board was used to plan out the work for both this and Challenge 4.
 
+The project was managed using a Agile approach, the requirements were broken down into user stories, which were then prioritised and worked through in order.
+
 I chose to approach the back end using an OOP paradigm. Splitting the project up into each aspect and trying where possible to keep it to a single responsibility. Once the core server was working, each route was created using a Test Driven Development approach.
 
 ### Imported Libraries
@@ -86,4 +88,4 @@ cookie-parser is used to handle cookies on the requests, to access the token, so
 
 ### Testing
 
-Development was done using a Test Driven Development methodology. While some unit tests were applied to methods where possible, the majority of the testing took on the form of integration tests, on the routes themselves. For each route I started with the basic correct response test and developed the code to ensure it passed.  A request would be sent to the server and then the result checked against what it should be. To facilitate this Chai, Mocha and Supertest were used, with c8 tracking coverage. 96.81% of the code has been tested.
+Development was done using a Test Driven Development methodology. While some unit tests were applied to methods where possible, the majority of the testing took on the form of integration tests, on the routes themselves. For each route I started with the basic correct response test and developed the code to ensure it passed.  A request would be sent to the server and then the result checked against what it should be. To facilitate this Chai, Mocha and Supertest were used, with c8 tracking coverage. 96.81% of the code was tested within the project deadline. 
